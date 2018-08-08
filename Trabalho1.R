@@ -27,10 +27,10 @@ meanTrainFeatures
 stdTrainFeatures
 
 train_data[,-(9:10)] = sweep(train_data[,-(9:10)], 2, meanTrainFeatures, "-")
-train_data[,-(9:10)] = train_data[,-(9:10)] / stdTrainFeatures
+train_data[,-(9:10)] = sweep(train_data[,-(9:10)], 2, meanTrainFeatures, "/")
 
 val_data[,-(9:10)] = sweep(val_data[,-(9:10)], 2, meanTrainFeatures, "-")
-val_data[,-(9:10)] = val_data[,-(9:10)] / stdTrainFeatures
+val_data[,-(9:10)] = sweep(val_data[,-(9:10)], 2, meanTrainFeatures, "/")
 
 # Changing Discrete Data
 train_data$h1ocean <- as.numeric(train_data$ocean_proximity == "<1H OCEAN")
@@ -60,3 +60,22 @@ mae_simple <- sum(abs(result_prediction - val_data$median_house_value)) / length
 mae_simple
 
 summary(prediction_simple)
+
+# Calculate Complex Linear Regression
+# Removed Latitude and Longitude, as they should somehow represent a single unit, and does not do that
+# Removing households, because it has many correlations
+# Removing near_ocean as it's being considered as NA
+# Creating new complexity
+prediction_complex <- lm(formula = median_house_value ~ housing_median_age + total_rooms + total_bedrooms
+                         + population + median_income + h1ocean + inland + island + near_bay + 
+                           I((population * median_income)^2) + I(h1ocean^3) + I(near_bay^2), 
+                         data = train_data)
+
+complex_res <- predict(prediction_complex, val_data)
+summary(complex_res)
+
+mae_complex <- sum(abs(complex_res - val_data$median_house_value)) / length(complex_res)
+mae_complex
+
+summary(prediction_complex)
+
