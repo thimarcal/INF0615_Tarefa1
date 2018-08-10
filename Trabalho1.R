@@ -5,13 +5,15 @@
 ########################################################################
 
 set.seed(42)
-setwd("/Users/thiagom/Documents/Studies/Unicamp/MDC/INF-615/Tarefas/INF0615_Tarefa1/")
+setwd("C:\\Users\\rafaelr\\Documents\\INF015\\Tarefa1\\INF0615_Tarefa1")
 
 # Reading data
 train_data <- read.csv("housePricing_trainSet.csv", header = TRUE)
 val_data<- read.csv("housePricing_valSet.csv", header = TRUE)
 
+dim(train_data)
 summary(train_data)
+dim(val_data)
 summary(val_data)
 
 # Remove entries with N/A 
@@ -79,3 +81,22 @@ mae_complex
 
 summary(prediction_complex)
 
+
+prediction_complex2 <- lm(formula = median_house_value ~ 
+                         + inland 
+                         + near_bay
+                         + near_ocean
+                         + (latitude * longitude) 
+                         + I(median_income^2)
+                         + I(median_income^5)
+                         + I(median_income^6)
+                         + ((median_income) * (housing_median_age) * (households) * (population) * (total_rooms)),
+                         data = train_data)
+
+complex_res2 <- predict(prediction_complex2, val_data)
+summary(complex_res2)
+
+mae_complex2 <- sum(abs(complex_res2 - val_data$median_house_value)) / length(complex_res2)
+mae_complex2
+
+summary(prediction_complex2)
