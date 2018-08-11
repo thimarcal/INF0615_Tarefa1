@@ -3,6 +3,8 @@
 # Alunos: Rafael Fernando Ribeiro                                      #
 #         Thiago Gomes Marçal Pereira                                  #
 ########################################################################
+#install.packages("corrplot")
+library(corrplot)
 
 set.seed(42)
 setwd("C:\\Users\\rafaelr\\Documents\\INF015\\Tarefa1\\INF0615_Tarefa1")
@@ -61,7 +63,8 @@ train_data$ocean_proximity = NULL
 val_data$ocean_proximity = NULL
 test_data$ocean_proximity = NULL
 
-cor(train_data[,-9])
+corTrain <- cor(train_data[,-9])
+corrplot(corTrain)
 
 # Calculate Simple Linear Regression (Trainning)
 prediction_simple <- lm(formula = median_house_value ~ ., data = train_data)
